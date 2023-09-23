@@ -1,0 +1,186 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="header.master.cs" Inherits="main_project.header" %>
+
+<% @Import Namespace="System" %>
+<% @Import Namespace="System.Collections.Generic" %>
+<% @Import Namespace="System.Linq" %>
+<% @Import Namespace="System.Web" %>
+<% @Import Namespace="System.Web.UI" %>
+<% @Import Namespace="System.Web.UI.WebControls" %>
+<% @Import Namespace="System.Data" %>
+<% @Import Namespace="System.Data.SqlClient" %>
+<% @Import Namespace="System.Windows.Forms" %>
+
+<!DOCTYPE html>
+
+<html>
+<head >
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <!-- favicon -->
+    <link rel="icon" style="height:max-content; width:max-content;" type="image/png" href="projectImages/gp-website-favicon-black.png" />
+
+    <!--fontawesome-->
+    <script src="https://kit.fontawesome.com/cf3d242817.js" crossorigin="anonymous"></script>
+
+    <!--jQuery-->
+    <script type="text/javascript" src="Scripts/jquery-3.4.1.min.js" ></script>
+
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+   
+    <script>
+
+        function updateCart() {
+            <%
+                            if (Session["user_id"] == null)
+                            {
+            %>
+            $(".current-cart").addClass("disabled");
+            <% 
+                            }
+                            else
+                            {
+                                int uid = Convert.ToInt16(Session["user_id"]);
+                                SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\midda\source\repos\main_project\App_Data\heaven_accessories.mdf;Integrated Security=True");
+                                con.Open();
+                                SqlCommand cmd = new SqlCommand("select count(*) from user_cart where uid=" + uid, con);
+                                int pq = Convert.ToInt16(cmd.ExecuteScalar());
+
+                                if (pq == 0)
+                                {
+            %>
+            $(".cart-body").html("<h3>Your cart is currently empty!! Continue shopping to add products into your Cart</h3>");
+            $(".checkout-btn").addClass("disabled");
+            <%  
+                            }
+                            else
+                            {
+            %>
+            $(".cart-items").html(`(<%=pq%>)`);
+            $(".cart-body").html("<h3>there are some items in your cart</h3>");
+            <%
+                                }
+                            }
+            %>
+
+        }
+    </script>
+
+    <form id="form1" runat="server">
+        
+        <!-- Navbar STARTS-->
+        <nav class="navbar navbar-dark bg-danger navbar-expand-lg bg-body-tertiary ">
+
+            <!-- Container fluid STARTS-->
+            <div class="container-fluid">
+
+                <a class="navbar-brand" href="home.aspx">Gamers
+                <asp:Image runat="server" Height="30px" Width="30px" ImageUrl="~/projectImages/game-controller.png" />
+                    Point
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- collapsable responsive menu STARTS-->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+
+                        <!-- Showing admin dashboard option if logged in user type is "admin" -->
+                        <%
+                            if (Session["user_type"] != null)
+                            {
+                                if (Session["user_type"].ToString() == "admin")
+                                {
+                        %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin_dashboard.aspx">Dashboard</a>
+                        </li>
+                        <%
+                                }
+                            }
+                        %>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+
+                    <ul class="navbar-nav ml-auto">
+
+                        <li class="nav-item current-cart" >
+                            <a class="nav-link active " aria-current="page" href="mycart.aspx"><i class="fa-sharp fa-solid fa-cart-shopping" style="font-size: 20px;"></i> <sub class="cart-items">(0)</sub> </a>
+                        </li>
+                        
+                        <script>
+                            updateCart();
+                        </script>
+                        
+                        
+                        <%
+                            if (Session["user_id"] == null)
+                            {
+                        %>
+
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="login_form.aspx">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="registration_form.aspx">Register</a>
+                        </li>
+                        <%
+                            }
+                            else
+                            {
+                                int user_id = Convert.ToInt16(Session["user_id"]);
+                                string user_name = Session["user_name"].ToString();
+                                string user_type = Session["user_type"].ToString();
+                        %>
+
+                        <li class="nav-item">
+                            <!--
+                            <a class="nav-link active" aria-current="page" href="<%= user_type == "admin" ? "admin_dashboard.aspx" : "profile_page.aspx" %>"><%= user_name %></a>
+                            -->
+                            <a class="nav-link active" aria-current="page" href="profile_page.aspx"><%= user_name %></a>
+                        </li>
+                        <li class="nav-item">
+                            <asp:Button runat="server" ID="logout_btn" Text="Logout" class="nav-link active" aria-current="page" OnClick="logout_btn_Click" />
+                        </li>
+                        <%
+
+                            }
+                        %>
+                    </ul>
+
+                </div>
+                <!-- collapsable responsive menu ENDS-->
+
+            </div>
+            <!-- Container fluid ENDS-->
+
+        </nav>
+        <!-- Navbar ENDS-->
+
+        <asp:ContentPlaceHolder ID="maincontentplaceholder1" runat="server">
+
+        </asp:ContentPlaceHolder>
+
+    </form>
+</body>
+</html>
